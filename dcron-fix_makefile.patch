@@ -1,0 +1,29 @@
+--- Makefile.orig	2011-05-10 20:01:39.000000000 +0200
++++ Makefile	2011-05-10 20:04:17.000000000 +0200
+@@ -20,11 +20,11 @@
+ 
+ 
+ SHELL = /bin/sh
+-INSTALL = install -o root
++INSTALL = install
+ INSTALL_PROGRAM = $(INSTALL) -D
+-INSTALL_DATA = $(INSTALL) -D -m0644 -g root
+-INSTALL_DIR = $(INSTALL) -d -m0755 -g root
+-CFLAGS ?= -O2
++INSTALL_DATA = $(INSTALL) -D -m0644
++INSTALL_DIR = $(INSTALL) -d -m0755
++CFLAGS = $(OPTFLAGS)
+ CFLAGS += -Wall -Wstrict-prototypes -Wno-missing-field-initializers
+ SRCS = main.c subs.c database.c job.c concat.c chuser.c
+ OBJS = main.o subs.o database.o job.o concat.o chuser.o
+@@ -63,8 +63,8 @@
+ 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(DEFS) $< -o $@
+ 
+ install:
+-	$(INSTALL_PROGRAM) -m0700 -g root crond $(DESTDIR)$(SBINDIR)/crond
+-	$(INSTALL_PROGRAM) -m4750 -g $(CRONTAB_GROUP) crontab $(DESTDIR)$(BINDIR)/crontab
++	$(INSTALL_PROGRAM) -m0700 crond $(DESTDIR)$(SBINDIR)/crond
++	$(INSTALL_PROGRAM) -m4750 crontab $(DESTDIR)$(BINDIR)/crontab
+ 	$(INSTALL_DATA) crontab.1 $(DESTDIR)$(MANDIR)/man1/crontab.1
+ 	$(INSTALL_DATA) crond.8 $(DESTDIR)$(MANDIR)/man8/crond.8
+ 	$(INSTALL_DIR) $(DESTDIR)$(SCRONTABS)

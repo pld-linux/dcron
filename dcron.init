@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+# crond		Start/Stop the cron clock daemon.
+#
+# chkconfig:	2345 40 60
+# description:	cron is a standard UNIX program that runs user-specified \
+#		programs at periodic scheduled times. dcron adds a \
+#		number of features to the basic UNIX cron, including better \
+#		security and more powerful configuration options.
+#
+# processname:	crond
+# config:	/etc/cron.d
+# pidfile:	/var/run/crond.pid
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+CROND_ARGS=""
+
+# Get service config
+[ -f /etc/sysconfig/cron ] && . /etc/sysconfig/cron
+
+start() {
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/crond ]; then
+		msg_already_running "dcron crond"
+		return
+	fi
+
+	msg_starting "dcron crond"
+	daemon /usr/sbin/crond $CROND_ARGS
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/crond
+}
+
+stop() {
+	if [ ! -f /var/lock/subsys/crond ]; then
+		msg_not_running "dcron crond"
+		return
+	fi
+
+	msg_stopping "dcron crond"
+	killproc crond
+	rm -f /var/lock/subsys/crond
+}
+
+reload() {
+	if [ ! -f /var/lock/subsys/crond ]; then
+		msg_not_running "dcron crond"
+		RETVAL=7
+		return
+	fi
+
+	msg_reloading "dcron crond"
+	killproc crond -HUP
+	RETVAL=$?
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/crond ]; then
+		msg_not_running "dcron crond"
+		RETVAL=$1
+		return
+	fi
+
+	stop
+	start
+}
+
+upstart_controlled
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  reload|force-reload|flush-logs)
+	reload
+	;;
+  status)
+	status --pidfile /var/run/crond.pid crond
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|flush-logs|status}"
+	exit 3
+esac
+
+exit $RETVAL
