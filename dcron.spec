@@ -26,6 +26,11 @@ This lightweight cron daemon aims to be simple and secure, with just
 enough features to stay useful. It was written from scratch by Matt
 Dillon in 1994. It's now developed and maintained by Jim Pryor.
 
+Dcron aims to be a simple, elegant and secure implementation of cron.
+It does not allow the specification of environment variables in
+crontabs and all cron-jobs are run from /bin/sh . Like Vixie cron,
+each user has his own crontab.
+
 In the author's opinion, having to combine a cron daemon with another
 daemon like anacron makes for too much complexity. So the goal is a
 simple cron daemon that can also take over the central functions of
